@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landing PQRS</title>
+  </head>
+  <body>
+    <div class="title-header">
+      {% if data %}
+
+      <h2>{{ message }}</h2>
+
+      <div class="main-content">
+        {% block corpus_content %}
+        <p>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Laborum
+          modi, exercitationem facilis commodi blanditiis amet natus doloremque
+          totam corrupti maiores, dignissimos, consectetur nobis culpa earum. Id
+          provident placeat fugiat debitis!
+        </p>
+        {% endblock %}
+
+        <div class="tables">
+          {% if data.table_information %}
+            <p>Table info</p>
+            {% for item in data.response_table %} 
+                <div class="entry">
+                  <li>{{ item['{table}_id'.format(table = data.table_name)] }}: {{ item['name'] }}</li>
+                </div>
+            {% endfor %}
+          {% else %}
+              <p>You have not consulted tables yet or encountered an error while doing so.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="footer-content">
+        {% block footer %}
+        <p>This is my <strong>default</strong> footer</p>
+        {% endblock %}
+      </div>
+
+      {% else %}
+      <h2>You're not supposed to be here!</h2>
+      {% endif %}
+    </div>
+  </body>
+</html>
