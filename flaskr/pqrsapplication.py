@@ -41,7 +41,6 @@ def get_all(table_name):
         cur.execute('''SELECT * FROM {table}'''.format(table = table_name))
         data = cur.fetchall()
         cur.close()
-        print(f"Response is: {json.dumps(data)}")
         passdown = {
             "logged" : True,
             "table_information" : True,
