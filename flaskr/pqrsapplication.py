@@ -26,6 +26,14 @@ def get_single_entry(table_name, id):
     cur.execute('''SELECT * FROM {table} WHERE {table}_id = %s'''.format(table = table_name), (id,))
     data = cur.fetchall()
     cur.close()
+    passdown = {
+        "logged" : True,
+        "table_information" : True,
+        "response_table" : data,
+        "table_name" : table_name
+    }
+    return render_template('pqrs_corpus.html', data = passdown)
+
     return jsonify(data).get_json
 
 @app.get('/data/<string:table_name>')
