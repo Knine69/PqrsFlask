@@ -2,14 +2,11 @@ from flask import Flask, render_template, request
 from flask_mysqldb import MySQL
 from sqlstatements import *
 from utils import *
+from config import Config
 import json
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
-app.config['MYSQL_DB'] = 'pqrs'
-app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
+app.config.from_object(Config)
 mysql = MySQL(app)
 
 @app.route("/")
