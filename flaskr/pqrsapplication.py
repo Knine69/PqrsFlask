@@ -23,7 +23,7 @@ def get_single_entry(table_name, id):
     """
     try:
         cur = mysql.connection.cursor()
-        cur.execute('''SELECT * FROM {table} WHERE {table}_id = %s'''.format(table = table_name), (id,))
+        cur.execute(get_one_from_table(), create_statements_block({"table": table_name, "table_name": table_name, "id": id}))
         data = cur.fetchall()
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
@@ -39,7 +39,7 @@ def get_all(table_name):
     """
     try:
         cur = mysql.connection.cursor()
-        cur.execute('''SELECT * FROM {table}'''.format(table = table_name))
+        cur.execute(get_all(), create_statements_block({"table": table_name}))
         data = cur.fetchall()
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
