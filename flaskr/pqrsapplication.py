@@ -1,5 +1,5 @@
 from flask import Flask
-from config import Config
+from domain.config import Config
 from router.pqrsrouting import router, mysql
 
 app = Flask(__name__)
