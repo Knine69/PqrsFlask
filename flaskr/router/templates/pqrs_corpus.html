@@ -1,8 +1,9 @@
 {% extends "home.html" %}
 {% block corpus_content %}
     {{ super() }}
-{% endblock %}
-
+    {% endblock %}
+    
 {% block footer %}
-    <p>This is my <strong>custom</strong> footer</p>
+    {{ super() }}
+    <!-- <p>This is my <strong>custom</strong> footer</p> -->
 {% endblock %}
