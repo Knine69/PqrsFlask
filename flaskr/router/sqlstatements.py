@@ -1,8 +1,8 @@
 def get_one_from_table():
-    return """SELECT * FROM %s where %s_id = %s"""
+    return """SELECT * FROM {} where {}_id = %s"""
 
 def get_all_entities():
-    return """SELECT * FROM %s"""
+    return """SELECT * FROM {}"""
 
 def create_new_role():
     return """INSERT INTO role (name) VALUES (%s)"""
