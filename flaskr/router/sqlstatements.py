@@ -7,8 +7,32 @@ def get_all_entities():
 def create_new_role():
     return """INSERT INTO role (name) VALUES (%s)"""
 
+def create_new_state():
+    return """INSERT INTO state (name) VALUES (%s)"""
+
+def create_new_position():
+    return """INSERT INTO position (name) VALUES (%s)"""
+
+def create_new_category():
+    return """INSERT INTO category (name) VALUES (%s)"""
+
+def create_new_department():
+    return """INSERT INTO department (name, active_members) VALUES (%s, %s)"""
+
 def create_new_person():
     return """INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES (%s, %s, %s, %s, %s, %s)"""
+
+def create_new_request():
+    return """INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id) VALUES (%s, %s, %s, %s, %s)"""
+
+def delete_person():
+    return """DELETE FROM person WHERE person_id = %s"""
+
+def delete_request():
+    return """DELETE FROM request WHERE request_id = %s"""
+
+def delete_leaf_table():
+    return """DELETE FROM {} WHERE {}_id = %s"""
 
 def create_statements_block(request_data):
     parameters = []
