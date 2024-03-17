@@ -55,5 +55,16 @@ def insert_new_person():
 
     return "Insert successfull"
 
+@router_person.delete("/<int:id>")
+def delete_person(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(delete_from_table().format(table_name, table_name), (id,))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Delete successfull"
 
 

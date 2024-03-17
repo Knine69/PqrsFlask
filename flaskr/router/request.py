@@ -43,3 +43,27 @@ def get_all():
         return e
 
 
+@router_request.post("/new_request")
+def insert_new_request():
+    try:
+        request_data = json.loads(request.data.decode('utf-8'))
+        cur = mysql.connection.cursor()
+        cur.execute(create_new_request(), create_statements_block(request_data))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Insert successfull"
+
+@router_request.delete("/<int:id>")
+def delete_request(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(delete_from_table().format(table_name, table_name), (id,))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Delete successfull"

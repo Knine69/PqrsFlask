@@ -42,4 +42,29 @@ def get_all():
     except Exception as e:
         return e
 
+@router_category.post("/new_category")
+def insert_new_category():
+    try:
+        request_data = json.loads(request.data.decode('utf-8'))
+        cur = mysql.connection.cursor()
+        cur.execute(create_new_category(), create_statements_block(request_data))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Insert successfull"
+
+@router_category.delete("/<int:id>")
+def delete_category(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(delete_from_table().format(table_name, table_name), (id,))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Delete successfull"
+
 

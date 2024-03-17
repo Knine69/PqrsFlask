@@ -40,3 +40,28 @@ def get_all():
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
     except Exception as e:
         return e
+    
+@router_position.post("/new_position")
+def insert_new_position():
+    try:
+        request_data = json.loads(request.data.decode('utf-8'))
+        cur = mysql.connection.cursor()
+        cur.execute(create_new_position(), create_statements_block(request_data))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Insert successfull"
+
+@router_position.delete("/<int:id>")
+def delete_position(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(delete_from_table().format(table_name, table_name), (id,))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Delete successfull"

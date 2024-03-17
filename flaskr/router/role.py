@@ -53,3 +53,15 @@ def insert_new_role():
         return e
 
     return "Insert successfull"
+
+@router_role.delete("/<int:id>")
+def delete_role(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(delete_from_table().format(table_name, table_name), (id,))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        return e
+
+    return "Delete successfull"
