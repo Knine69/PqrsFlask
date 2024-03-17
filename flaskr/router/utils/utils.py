@@ -1,5 +1,16 @@
 from flask import Blueprint
 
+PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
+
+def fetch_resources(cur):
+
+    main_result = cur.fetchall()
+    remaining_result_sets = []
+    while cur.nextset():
+        remaining_result_sets.append(cur.fetchall())
+
+    return [main_result, remaining_result_sets] 
+
 def passdown_empty():
     return {
             "logged" : True,

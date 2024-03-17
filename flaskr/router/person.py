@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from router.sqlstatements import *
-from router.utils import *
+from router.utils.utils import *
 from domain.config import Config
 import json
 
@@ -67,4 +67,17 @@ def delete_person(id):
 
     return "Delete successfull"
 
+@router_person.patch("/<int:id>")
+def update_personrouter_person(id):
+    try:
+        request_data = json.loads(request.data.decode('utf-8'))
+        cur = mysql.connection.cursor()
+        cur.callproc(PATCH_STORED_PROCEDURE, [table_name, id, json.dumps(request_data)])
+        response = fetch_resources(cur)
+        mysql.connection.commit()
+        cur.close()
 
+        return jsonify(response[0])
+    except Exception as e:
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
