@@ -25,13 +25,7 @@ def create_new_person():
 def create_new_request():
     return """INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id) VALUES (%s, %s, %s, %s, %s)"""
 
-def delete_person():
-    return """DELETE FROM person WHERE person_id = %s"""
-
-def delete_request():
-    return """DELETE FROM request WHERE request_id = %s"""
-
-def delete_leaf_table():
+def delete_from_table():
     return """DELETE FROM {} WHERE {}_id = %s"""
 
 def create_statements_block(request_data):
