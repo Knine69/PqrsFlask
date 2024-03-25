@@ -24,7 +24,8 @@ def get_single_entry(id):
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
 @router_state.get('/')
 def get_all():
@@ -40,7 +41,8 @@ def get_all():
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
 @router_state.post("/new_state")
 def insert_new_state():
@@ -51,7 +53,8 @@ def insert_new_state():
         mysql.connection.commit()
         cur.close()
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
     return "Insert successfull"
 
@@ -63,7 +66,8 @@ def delete_state(id):
         mysql.connection.commit()
         cur.close()
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
     return "Delete successfull"
 
