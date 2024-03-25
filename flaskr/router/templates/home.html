@@ -26,14 +26,12 @@
           <div class="tables">
             {% if data.table_information %}
             <p>Last consulted information</p>
-            {% for item in data.response_table %}
-            <div class="entry">
-              <li>
-                {{ item['{table}_id'.format(table = data.table_name)] }}: {{
-                item['name'] }}
-              </li>
-            </div>
-            {% endfor %} {% else %}
+              {% if data.response_table.is_person %}
+                {% include "person_lookup.html" %}
+              {% else %}  
+                {% include "all_tables.html" %}
+              {% endif %}
+            {% else %}
             <p>
               You have not consulted tables yet or encountered an error while
               doing so.
