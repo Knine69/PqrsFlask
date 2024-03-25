@@ -28,6 +28,8 @@
             <p>Last consulted information</p>
               {% if data.response_table.is_person %}
                 {% include "person_lookup.html" %}
+              {% elif data.response_table.is_request %}
+                {% include "request_lookup.html" %}
               {% else %}  
                 {% include "all_tables.html" %}
               {% endif %}

@@ -1,0 +1,33 @@
+<table >
+    <thead>
+      <tr>
+        <td>Request information</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td> ID </td>
+        <td> {{ data.response_table.query_result[0]['request_id'] }} </td>
+      </tr>  
+      <tr>
+        <td> Resumen </td>
+        <td> {{ data.response_table.query_result[0]['summary'] }} </td>
+      </tr>
+      <tr>
+        <td> Fecha de expedición </td>
+        <td> {{ data.response_table.query_result[0]['Timestamp'] }} </td>
+      </tr>
+      <tr>
+        <td> Categoría </td>
+        <td> {{ data.response_table.query_result[0]['Category'] }} </td>
+      </tr>
+      <tr>
+        <td> Solicitante </td>
+        <td> {{ data.response_table.query_result[0]['Requester'] }} </td>
+      </tr>
+      <tr>
+        <td> Solucionador </td>
+        <td> {{ data.response_table.query_result[0]['Solver'] }} </td>
+      </tr>
+    </tbody>
+  </table>
