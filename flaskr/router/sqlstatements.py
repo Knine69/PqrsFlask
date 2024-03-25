@@ -4,6 +4,9 @@ def get_one_from_table():
 def get_all_entities():
     return """SELECT * FROM {}"""
 
+def get_person_information():
+    return """SELECT s.* FROM (select @person_id:= %s p) parm , LookUpPersonInformation s;"""
+
 def create_new_role():
     return """INSERT INTO role (name) VALUES (%s)"""
 
