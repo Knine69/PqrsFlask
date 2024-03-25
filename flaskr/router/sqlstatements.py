@@ -7,6 +7,9 @@ def get_all_entities():
 def get_person_information():
     return """SELECT s.* FROM (select @person_id:= %s p) parm , LookUpPersonInformation s;"""
 
+def get_request_information():
+    return """SELECT s.* FROM (select @request_id:= %s p) parm , LookUpRequestInfo s;"""
+
 def create_new_role():
     return """INSERT INTO role (name) VALUES (%s)"""
 
