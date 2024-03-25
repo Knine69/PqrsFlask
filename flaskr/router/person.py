@@ -26,8 +26,6 @@ def get_single_entry(id):
             "query_result": data,
             "is_person": True
         }
-
-        print(f"Response data: {response_data}")
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, response_data, table_name))
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
@@ -46,8 +44,7 @@ def get_all():
         data = cur.fetchall()
         cur.close()
         response_data = {
-            "query_result": data,
-            "is_person": False
+            "query_result": data
         }
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, response_data, table_name))
     except Exception as e:

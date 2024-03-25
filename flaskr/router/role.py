@@ -38,7 +38,10 @@ def get_all():
         cur.execute(get_all_entities().format(table_name))
         data = cur.fetchall()
         cur.close()
-        return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
+        response_data = {
+            "query_result": data
+        }
+        return render_template('pqrs_corpus.html', data = passdown_response(True, True, response_data, table_name))
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
