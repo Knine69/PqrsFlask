@@ -23,7 +23,8 @@ def get_single_entry(id):
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
 @router_role.get('/')
 def get_all():
@@ -39,7 +40,8 @@ def get_all():
         cur.close()
         return render_template('pqrs_corpus.html', data = passdown_response(True, True, data, table_name))
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
 @router_role.post("/new_role")
 def insert_new_role():
@@ -50,7 +52,8 @@ def insert_new_role():
         mysql.connection.commit()
         cur.close()
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
     return "Insert successfull"
 
@@ -62,7 +65,8 @@ def delete_role(id):
         mysql.connection.commit()
         cur.close()
     except Exception as e:
-        return e
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify(error_message), 500
 
     return "Delete successfull"
 
