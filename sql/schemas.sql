@@ -44,7 +44,9 @@ create TABLE IF NOT EXISTS request (
     summary VARCHAR(200) NOT NULL,
     category_id INT NOT NULL,
     requester_id INT NOT NULL,
-    solver_id INT NOT NULL,
+    solver_id INT,
+    state_id INT,
+    FOREIGN KEY (state_id) REFERENCES state (state_id),
     FOREIGN KEY (category_id) REFERENCES category (category_id),
     FOREIGN KEY (requester_id) REFERENCES person (person_id),
     FOREIGN KEY (solver_id) REFERENCES person (person_id)
