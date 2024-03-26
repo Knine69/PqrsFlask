@@ -44,9 +44,9 @@ INSERT INTO person (name, document_id, email, position_id, role_id, department_i
 INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES ('Alex Doe', '12347', 'alex@example.com', 3, 1, 1);
 INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES ('Miranda Doe', '12348', 'miranda@example.com', 4, 2, 2);
 INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES ('William Doe', '12349', 'william@example.com', 5, 1, 1);
-
 INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES ('Solver Doe', '12355', 'solver@example.com', 1, 1, 1);
 
+
 -- Insert into request
-INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id) VALUES ('2024-03-02', 'General request', 3, 1, 1);
-INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id) VALUES ('2024-03-02', 'Class request', 9, 2, );
+INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id, state_id) VALUES ('2024-03-02', 'General request', 3, 6, 1, 1);
+INSERT INTO request (generated_at, summary, category_id, solver_id, requester_id, state_id) VALUES ('2024-03-02', 'Class request', 9, NULL, 2, 1);
