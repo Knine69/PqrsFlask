@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POLI PQRS</title>
+    <link rel="icon" type="image/jpeg" href="../../static/iconShield.jpeg" />
+    <link rel="stylesheet" href="../../static/style.css" />
+  </head>
+  <body>
+    <div class="title-header">
+      {% if data %}
+
+      <div class="overlay"></div>
+      <div class="content-container">
+        <h1>POLI PQRS</h1>
+        <h2>¿Cómo podemos ayudarte?</h2>
+        <div class="option-buttons">
+          <button class="option-button">Enviar queja</button>
+          <button class="option-button">Hacer reclamo</button>
+          <button class="option-button">Realizar pregunta</button>
+        </div>
+
+        <div class="main-content">
+  
+          <div class="tables">
+            {% if data.table_information %}
+            <p>Last consulted information</p>
+              {% if data.response_table.is_person %}
+                {% include "person_lookup.html" %}
+              {% elif data.response_table.is_request %}
+                {% include "request_lookup.html" %}
+              {% else %}  
+                {% include "all_tables.html" %}
+              {% endif %}
+            {% else %}
+            <p>
+              You have not consulted tables yet or encountered an error while
+              doing so.
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <h2>{{ message }}</h2>
+      <div class="footer-content">
+        {% block footer %}
+        <!-- <p>This is my <strong>default</strong> footer</p> -->
+        {% endblock %}
+      </div>
+
+      {% else %}
+      <h2>You're not supposed to be here!</h2>
+      {% endif %}
+    </div>
+  </body>
+</html>

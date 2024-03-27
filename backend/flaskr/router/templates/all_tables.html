@@ -1,0 +1,7 @@
+{% for item in data.response_table.query_result %}
+<div class="entry">
+    <li>
+    {{ item['{table}_id'.format(table = data.table_name)] }}: {{item['name'] or item['summary'] }}
+    </li>
+</div>
+{% endfor %} 
