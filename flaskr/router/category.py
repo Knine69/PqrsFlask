@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
-from router.sqlstatements import *
-from router.utils.utils import *
-from domain.config import Config
+from ..router.sqlstatements import *
+from ..router.utils.utils import *
+from ..domain.config import Config
 import json
 
 router_category = Blueprint('router_category', __name__, template_folder='templates', url_prefix='/category')
