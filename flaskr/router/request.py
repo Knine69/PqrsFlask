@@ -22,11 +22,7 @@ def get_single_entry(id):
         cur.execute(get_request_information(), create_statements_block({"id": id}))
         data = cur.fetchall()
         cur.close()
-        response_data = {
-            "query_result": data,
-            "is_request": True
-        }
-        return render_template('pqrs_corpus.html', data = passdown_response(True, True, response_data, table_name))
+        return json.dumps(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
@@ -43,12 +39,7 @@ def get_all():
         cur.execute(get_all_entities().format(table_name))
         data = cur.fetchall()
         cur.close()
-        response_data = {
-            "query_result": data
-        }
-
-        print(f"Response {data}")
-        return render_template('pqrs_corpus.html', data = passdown_response(True, True, response_data, table_name))
+        return json.dumps(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
