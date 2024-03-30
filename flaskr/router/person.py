@@ -22,7 +22,7 @@ def get_single_entry(id):
         cur.execute(get_person_information(), create_statements_block({"id": id}))
         data = cur.fetchall()
         cur.close()
-        return json.dumps(data)
+        return jsonify(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
@@ -39,7 +39,7 @@ def get_all():
         cur.execute(get_all_entities().format(table_name))
         data = cur.fetchall()
         cur.close()
-        return json.dumps(data)
+        return jsonify(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
