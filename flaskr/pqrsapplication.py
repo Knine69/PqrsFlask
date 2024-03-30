@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from .domain.config import Config
 from .router.category import router_category
 from .router.department import router_department
@@ -22,3 +23,4 @@ app.config.from_object(Config)
 
 mysql = Config.give_mysql_instance()
 mysql.init_app(app)
+CORS(app)
