@@ -14,7 +14,6 @@ def get_single_entry(id):
     """
     Brings a specific registry from a specific table dynamically.
 
-    table_name: Gives the specific table name
     id: Gives the specific ID to look for in the database
     """
     try:
@@ -31,8 +30,6 @@ def get_single_entry(id):
 def get_all():
     """
     Brings a all entries from a specific table dynamically.
-
-    table_name: Gives the specific table name
     """
     try:
         cur = mysql.connection.cursor()
@@ -46,6 +43,9 @@ def get_all():
 
 @router_person.post("/new_person")
 def insert_new_person():
+    """
+    Creates new person based on a received body sent from the Web Server
+    """
     try:
         request_data = json.loads(request.data.decode('utf-8'))
         cur = mysql.connection.cursor()
@@ -60,6 +60,11 @@ def insert_new_person():
 
 @router_person.delete("/<int:id>")
 def delete_person(id):
+    """
+    Deletes a specific person based on a given ID
+
+    id: Given ID to delete in database
+    """
     try:
         cur = mysql.connection.cursor()
         cur.execute(delete_from_table().format(table_name, table_name), (id,))
@@ -73,6 +78,9 @@ def delete_person(id):
 
 @router_person.patch("/<int:id>")
 def update_personrouter_person(id):
+    """
+    Updates a person in database based on the received elements from a JSON coming from the Web Server
+    """
     try:
         request_data = json.loads(request.data.decode('utf-8'))
         cur = mysql.connection.cursor()
