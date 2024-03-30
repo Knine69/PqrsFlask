@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, request, jsonify
 from ..router.sqlstatements import *
 from ..router.utils.utils import *
 from ..domain.config import Config
@@ -22,7 +22,7 @@ def get_single_entry(id):
         cur.execute(get_request_information(), create_statements_block({"id": id}))
         data = cur.fetchall()
         cur.close()
-        return json.dumps(data)
+        return jsonify(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
@@ -39,7 +39,7 @@ def get_all():
         cur.execute(get_all_entities().format(table_name))
         data = cur.fetchall()
         cur.close()
-        return json.dumps(data)
+        return jsonify(data)
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
@@ -48,16 +48,20 @@ def get_all():
 @router_request.post("/new_request")
 def insert_new_request():
     try:
-        request_data = json.loads(request.data.decode('utf-8'))
+        request_data = _adapt_request_data_new_request()
         cur = mysql.connection.cursor()
-        cur.execute(create_new_request(), create_statements_block(request_data))
+        cur.execute(create_new_request(), create_statements_block(give_new_request_body(request_data)))
         mysql.connection.commit()
         cur.close()
+
+        return {       
+            "Descrition": "Insert successfull"
+            }
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
 
-    return "Insert successfull"
+    
 
 @router_request.delete("/<int:id>")
 def delete_request(id):
@@ -86,3 +90,13 @@ def update_request(id):
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
+
+def _get_category(data):
+    return get_category_id_by_name(mysql, data)
+
+def _adapt_request_data_new_request():
+    request_data = json.loads(request.data.decode('utf-8'))
+    request_data.update(_get_category(request_data["category"]))
+    request_data.pop("category")
+
+    return request_data
