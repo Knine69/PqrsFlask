@@ -34,3 +34,14 @@ BEGIN
 END //
 
 DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetCategoryByName (IN categoryName VARCHAR(100))
+BEGIN
+
+	SET @query = CONCAT('SELECT * FROM category WHERE name LIKE \'%', categoryName, '%\'');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
