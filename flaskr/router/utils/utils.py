@@ -1,6 +1,9 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
+import json
+from datetime import datetime
 
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
+GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
 
 def fetch_resources(cur):
 
@@ -9,27 +12,21 @@ def fetch_resources(cur):
     while cur.nextset():
         remaining_result_sets.append(cur.fetchall())
 
-    return [main_result, remaining_result_sets] 
+    return [main_result, remaining_result_sets]
 
-def passdown_empty():
+def get_category_id_by_name(mysql, category_name):
+    cur = mysql.connection.cursor()
+    cur.callproc(GET_CATEGORY_NAME_PROCEDURE, [category_name])
+    response = fetch_resources(cur)
+    return {"category_id": response[0][0]['category_id']}
+
+def give_new_request_body (request_data):
     return {
-            "logged" : True,
-            "table_information" : False,
-            "response_table" : None,
-            "table_name" : None
-
-        }
-
-def passdown_response(logged, table_info, response_table, table_name):
-    return {
-            "logged" : logged,
-            "table_information" : table_info,
-            "response_table" : response_table,
-            "table_name" : table_name
-        }
-
-def _is_logged():
-    return True
+        "generated_at": datetime.now().strftime('%Y-%m-%d'),
+        "summary": request_data["summary"],
+        "category_id": request_data["category_id"],
+        "requester_id": request_data["id"]
+    }
 
 def return_table_name(router: Blueprint):
     return router.url_prefix[1:]
