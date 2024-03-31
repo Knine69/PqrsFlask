@@ -55,7 +55,7 @@ def insert_new_request():
             mysql.connection.commit()
             cur.close()
             return {       
-                "Descrition": "Insert successfull"
+                "Description": "Insert successfull"
                 }
         return jsonify({"error": request_data["error"]}), 404
     except Exception as e:
