@@ -29,7 +29,7 @@ def create_new_person():
     return """INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES (%s, %s, %s, %s, %s, %s)"""
 
 def create_new_request():
-    return """INSERT INTO request (generated_at, summary, category_id, requester_id) VALUES (%s, %s, %s, %s)"""
+    return """INSERT INTO request (generated_at, summary, category_id, requester_id, state_id) VALUES (%s, %s, %s, %s, %s)"""
 
 def delete_from_table():
     return """DELETE FROM {} WHERE {}_id = %s"""
