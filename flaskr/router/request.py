@@ -49,14 +49,15 @@ def insert_new_request():
     """
     try:
         request_data = _adapt_request_data_new_request()
-        cur = mysql.connection.cursor()
-        cur.execute(create_new_request(), create_statements_block(give_new_request_body(request_data)))
-        mysql.connection.commit()
-        cur.close()
-
-        return {       
-            "Descrition": "Insert successfull"
-            }
+        if not request_data["error"]:
+            cur = mysql.connection.cursor()
+            cur.execute(create_new_request(), create_statements_block(give_new_request_body(request_data)))
+            mysql.connection.commit()
+            cur.close()
+            return {       
+                "Descrition": "Insert successfull"
+                }
+        return jsonify({"error": request_data["error"]}), 404
     except Exception as e:
         error_message = "An error occurred: {}".format(str(e))
         return jsonify(error_message), 500
@@ -102,9 +103,15 @@ def update_request(id):
 def _get_category(data):
     return get_category_id_by_name(mysql, data)
 
+def _get_person(data):
+    return get_person_by_document_id(mysql, data)
+
 def _adapt_request_data_new_request():
     request_data = json.loads(request.data.decode('utf-8'))
     request_data.update(_get_category(request_data["category"]))
+    request_data.update(_get_person(request_data["documentId"]))
+
     request_data.pop("category")
+    request_data.pop("documentId")
 
     return request_data
