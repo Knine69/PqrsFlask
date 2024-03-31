@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify
-import json
 from datetime import datetime
 
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
 GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
+_STATE_ID_NEW_REQUEST = 1
 
 def fetch_resources(cur):
     main_result = cur.fetchall()
@@ -41,8 +41,8 @@ def give_new_request_body (request_data):
         "generated_at": datetime.now().strftime('%Y-%m-%d'),
         "summary": request_data["summary"],
         "category_id": request_data["category_id"],
-        "requester_id": request_data["id"],
-        "state_id": 1
+        "requester_id": request_data["requester_id"],
+        "state_id": _STATE_ID_NEW_REQUEST
     }
 
 def return_table_name(router: Blueprint):
