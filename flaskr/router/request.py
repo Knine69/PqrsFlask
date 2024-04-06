@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from ..router.sqlstatements import get_request_information, create_statements_block, get_all_entities, delete_from_table, create_new_request
-from ..router.utils.utils import return_table_name, PATCH_STORED_PROCEDURE, fetch_resources, give_new_request_body, get_category_id_by_name, get_person_by_document_id
+from ..router.utils.utils import return_table_name, PATCH_STORED_PROCEDURE, fetch_resources, give_new_request_body, get_category_id_by_name, get_person_by_document_id, ERROR_MESSAGE
 from ..domain.config import Config
 import json
 
@@ -23,7 +23,7 @@ def get_single_entry(id):
         cur.close()
         return jsonify(data)
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
 @router_request.get('/')
@@ -38,7 +38,7 @@ def get_all():
         cur.close()
         return jsonify(data)
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
 
@@ -59,7 +59,7 @@ def insert_new_request():
                 }
         return jsonify({"error": request_data["error"]}), 404
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
     
@@ -77,7 +77,7 @@ def delete_request(id):
         mysql.connection.commit()
         cur.close()
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
     return "Delete successfull"
@@ -97,7 +97,7 @@ def update_request(id):
 
         return jsonify(response[0])
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
 def _get_category(data):

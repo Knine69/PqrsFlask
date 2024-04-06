@@ -4,6 +4,7 @@ from datetime import datetime
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
 GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
+ERROR_MESSAGE="An error occurred: {}"
 _STATE_ID_NEW_REQUEST = 1
 
 def fetch_resources(cur):
@@ -21,7 +22,7 @@ def get_category_id_by_name(mysql, category_name):
         response = fetch_resources(cur)
         return {"category_id": response[0][0]['category_id']}
     except Exception as e:
-        error_message = "An error occurred: {}".format(str(e))
+        error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
 
 
@@ -31,7 +32,7 @@ def get_person_by_document_id(mysql, document_id):
         cur.callproc(GET_PERSON_BY_DOCUMENT_PROCEDURE, [document_id])
         response = fetch_resources(cur)
         return {"requester_id": response[0][0]['person_id'], "error": None}
-    except Exception as e:
+    except Exception:
         return {
             "error": "Person does not exist"
         }
