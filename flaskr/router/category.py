@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from ..router.sqlstatements import *
-from ..router.utils.utils import *
+from ..router.sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table, create_new_category
+from ..router.utils.utils import return_table_name, PATCH_STORED_PROCEDURE, fetch_resources
 from ..domain.config import Config
 import json
 

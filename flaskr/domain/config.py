@@ -8,5 +8,5 @@ class Config:
     MYSQL_DB = 'pqrs'
     MYSQL_CURSORCLASS = 'DictCursor'
 
-    def give_mysql_instance():
+    def give_mysql_instance(self):
         return _mysql
