@@ -24,7 +24,7 @@ class Category(QueryExecutor):
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
 
-        return "Insert successfull"
+        return {"Response":"Insert successfull"}
     
     def delete_registry(self, id):
         return super().delete_registry(id)
