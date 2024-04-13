@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
-from ..router.sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table, create_new_role
-from ..router.utils.utils import return_table_name, PATCH_STORED_PROCEDURE, fetch_resources, ERROR_MESSAGE
+from ..router.utils.utils import return_table_name
 from ..domain.config import Config
-import json
+from ..domain.models.queries.rolequery import Role
 
 router_role = Blueprint('router_role', __name__, template_folder='templates', url_prefix='/role')
 mysql = Config.give_mysql_instance(self=Config)
-table_name = return_table_name(router_role)
+
+role_query = Role(return_table_name(router_role))
 
 @router_role.route('/<int:id>', methods=["GET"])
 def get_single_entry(id):
@@ -15,47 +15,21 @@ def get_single_entry(id):
 
     id: Gives the specific ID to look for in the database
     """
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(get_one_from_table().format(table_name, table_name), create_statements_block({"id": id}))
-        data = cur.fetchall()
-        cur.close()
-        return jsonify(data)
-    except Exception as e:
-        error_message = ERROR_MESSAGE.format(str(e))
-        return jsonify(error_message), 500
+    return jsonify(role_query.get_single_registry(id))
 
 @router_role.get('/')
 def get_all():
     """
     Brings a all entries from a specific table dynamically.
     """
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(get_all_entities().format(table_name))
-        data = cur.fetchall()
-        cur.close()
-        return jsonify(data)
-    except Exception as e:
-        error_message = ERROR_MESSAGE.format(str(e))
-        return jsonify(error_message), 500
+    return jsonify(role_query.get_registries())
 
 @router_role.post("/new_role")
 def insert_new_role():
     """
     Creates new role based on a received body sent from the Web Server
     """
-    try:
-        request_data = json.loads(request.data.decode('utf-8'))
-        cur = mysql.connection.cursor()
-        cur.execute(create_new_role(), create_statements_block(request_data))
-        mysql.connection.commit()
-        cur.close()
-    except Exception as e:
-        error_message = ERROR_MESSAGE.format(str(e))
-        return jsonify(error_message), 500
-
-    return "Insert successfull"
+    return jsonify(role_query.post_new(request))
 
 @router_role.delete("/<int:id>")
 def delete_role(id):
@@ -64,31 +38,11 @@ def delete_role(id):
 
     id: Given ID to delete in database
     """
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(delete_from_table().format(table_name, table_name), (id,))
-        mysql.connection.commit()
-        cur.close()
-    except Exception as e:
-        error_message = ERROR_MESSAGE.format(str(e))
-        return jsonify(error_message), 500
-
-    return "Delete successfull"
+    return jsonify(role_query.delete_registry(id))
 
 @router_role.patch("/<int:id>")
 def update_role(id):
     """
     Updates a request in database based on the received elements from a JSON coming from the Web Server
     """
-    try:
-        request_data = json.loads(request.data.decode('utf-8'))
-        cur = mysql.connection.cursor()
-        cur.callproc(PATCH_STORED_PROCEDURE, [table_name, id, json.dumps(request_data)])
-        response = fetch_resources(cur)
-        mysql.connection.commit()
-        cur.close()
-
-        return jsonify(response[0])
-    except Exception as e:
-        error_message = ERROR_MESSAGE.format(str(e))
-        return jsonify(error_message), 500
+    return jsonify(role_query.patch_registry(id, request))
