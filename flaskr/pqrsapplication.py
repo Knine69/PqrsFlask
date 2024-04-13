@@ -21,6 +21,8 @@ app.register_blueprint(router_state)
 
 app.config.from_object(Config)
 
-mysql = Config.give_mysql_instance()
+mysql = Config.give_mysql_instance(self=Config)
+
 mysql.init_app(app)
-CORS(app)
+
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
