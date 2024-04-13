@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
 from ..router.sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table, create_new_category
-from ..router.utils.utils import return_table_name, fetch_resources, PATCH_STORED_PROCEDURE, ERROR_MESSAGE
+from ..router.utils.utils import return_table_name, fetch_resources, PATCH_STORED_PROCEDURE, ERROR_MESSAGE, ALLOWED_ORIGINS
 from ..domain.config import Config
 import json
 
 router_category = Blueprint('router_category', __name__, template_folder='templates', url_prefix='/category')
-mysql = Config.give_mysql_instance()
+mysql = Config.give_mysql_instance(self=Config)
 
 table_name = return_table_name(router_category)
 
@@ -32,11 +32,16 @@ def get_all():
     Brings a all entries from a specific table dynamically.
     """
     try:
-        cur = mysql.connection.cursor()
-        cur.execute(get_all_entities().format(table_name))
-        data = cur.fetchall()
-        cur.close()
-        return jsonify(data)
+        origin = request.headers["origin"]
+        if  origin in ALLOWED_ORIGINS:
+            cur = mysql.connection.cursor()
+            cur.execute(get_all_entities().format(table_name))
+            data = cur.fetchall()
+            cur.close()
+
+            response = jsonify(data)
+            response.headers["Access-Control-Allow-Origin"] = origin
+            return response
     except Exception as e:
         error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500

@@ -5,7 +5,7 @@ from ..domain.config import Config
 import json
 
 router_role = Blueprint('router_role', __name__, template_folder='templates', url_prefix='/role')
-mysql = Config.give_mysql_instance()
+mysql = Config.give_mysql_instance(self=Config)
 table_name = return_table_name(router_role)
 
 @router_role.route('/<int:id>', methods=["GET"])

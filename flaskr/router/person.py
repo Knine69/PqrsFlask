@@ -5,7 +5,7 @@ from ..domain.config import Config
 import json
 
 router_person = Blueprint('router_person', __name__, template_folder='templates', url_prefix='/person')
-mysql = Config.give_mysql_instance()
+mysql = Config.give_mysql_instance(self=Config)
 
 table_name = return_table_name(router_person)
 
