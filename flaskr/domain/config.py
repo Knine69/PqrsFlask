@@ -1,7 +1,7 @@
 from flask_mysqldb import MySQL
-_mysql = MySQL()
 
 class Config:
+    _mysql = MySQL()
     MYSQL_HOST = 'localhost'
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = 'password'
@@ -9,4 +9,4 @@ class Config:
     MYSQL_CURSORCLASS = 'DictCursor'
 
     def give_mysql_instance(self):
-        return _mysql
+        return self._mysql
