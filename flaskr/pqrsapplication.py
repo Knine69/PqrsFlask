@@ -1,13 +1,13 @@
 from flask import Flask
 from flask_cors import CORS
 from .domain.config import Config
-from .router.category import router_category
-from .router.department import router_department
-from .router.person import router_person
-from .router.position import router_position
-from .router.request import router_request
-from .router.role import router_role
-from .router.state import router_state
+from .application.router.category import router_category
+from .application.router.department import router_department
+from .application.router.person import router_person
+from .application.router.position import router_position
+from .application.router.request import router_request
+from .application.router.role import router_role
+from .application.router.state import router_state
 
 app = Flask(__name__)
 
