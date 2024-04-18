@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS person (
     person_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     document_id VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(200) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL,
     position_id INT NOT NULL,
     role_id INT NOT NULL,
