@@ -1,5 +1,5 @@
 from .queryexecutor import QueryExecutor
-from ....router.utils.utils import ERROR_MESSAGE
+from ....application.router.utils.utils import ERROR_MESSAGE
 from ..sqlstatements import create_statements_block, create_new_role
 import json
 

@@ -1,7 +1,7 @@
 from .queryexecutor import QueryExecutor
-from ....router.utils.utils import ERROR_MESSAGE
+from ....application.router.utils.utils import ERROR_MESSAGE
 from ..sqlstatements import create_statements_block, create_new_request
-from ....router.utils.utils import get_person_by_document_id, get_category_id_by_name, give_new_request_body
+from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body
 import json
 
 class Request(QueryExecutor):
@@ -43,14 +43,13 @@ class Request(QueryExecutor):
 
         request_data.pop("category")
         request_data.pop("documentId")
-
         return request_data
 
     def _get_category(self, data):
         return get_category_id_by_name(self.mysql, data)
 
     def _get_person(self, data):
-        return get_person_by_document_id(self.mysql, data)
+        return get_person_id_by_document_id(self.mysql, data)
 
     
     

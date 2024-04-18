@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from ....domain.config import Config
-from ....router.utils.utils import PATCH_STORED_PROCEDURE, ERROR_MESSAGE, fetch_resources
+from ....application.router.utils.utils import PATCH_STORED_PROCEDURE, ERROR_MESSAGE, fetch_resources
 from ..sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table
 import json
 
