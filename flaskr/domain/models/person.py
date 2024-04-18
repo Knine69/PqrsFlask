@@ -10,7 +10,7 @@ class Person:
 
     def __init__(self, person_data: dict):
         self.__id = person_data.get('person_id')
-        self.__document = person_data.get('document')
+        self.__document = person_data.get('document_id')
         self.__password = person_data.get('password')
         self.__position = person_data.get('position_id')
         self.__role = person_data.get('role_id')
