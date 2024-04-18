@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..router.utils.utils import return_table_name
 from ...domain.models.queries.departmentquery import Department
+import json
 
 router_department = Blueprint('router_department', __name__, template_folder='templates', url_prefix='/department')
 deparment_query = Department(return_table_name(router_department))
@@ -12,14 +13,14 @@ def get_single_entry(id):
 
     id: Gives the specific ID to look for in the database
     """
-    return jsonify(deparment_query.get_single_registry(id))
+    return jsonify(deparment_query.get_single_registry(id)).json
 
 @router_department.get('/')
 def get_all():
     """
     Brings a all entries from a specific table dynamically.
     """
-    return jsonify(deparment_query.get_registries(id))
+    return jsonify(deparment_query.get_registries())
 
 @router_department.post("/new_department")
 def insert_new_department():

@@ -3,7 +3,7 @@ from ....application.router.utils.utils import ERROR_MESSAGE, get_person_by_docu
 from ..sqlstatements import create_statements_block, create_new_person
 import json
 
-class Person(QueryExecutor):
+class PersonQuery(QueryExecutor):
     def __init__(self, table_name) -> None:
         super().__init__(table_name)
 

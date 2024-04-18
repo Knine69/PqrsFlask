@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify
 from ..router.utils.utils import return_table_name
 from ...domain.config import Config
-from ...domain.models.queries.personquery import Person
+from ...domain.models.queries.personquery import PersonQuery
 
 router_person = Blueprint('router_person', __name__, template_folder='templates', url_prefix='/person')
 mysql = Config.give_mysql_instance(self=Config)
 
-person_query = Person(return_table_name(router_person))
+person_query = PersonQuery(return_table_name(router_person))
 
 @router_person.route('/<int:id>', methods=["GET"])
 def get_single_entry(id):
