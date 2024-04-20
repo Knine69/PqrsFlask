@@ -1,34 +1,84 @@
 from datetime import datetime, timedelta, timezone
+from functools import wraps
+from flask import request, jsonify
+from jose import jwt 
+from jose.constants import ALGORITHMS 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+import base64
 from ...domain.models.person import Person
 from ...application.dto.user import UserDto
 from ...domain.models.queries.utils.secureutilities import SecurityConstants
-from jose import jwt 
-from jose.constants import ALGORITHMS 
-
 
 class JwtManager():
     __security_constants = SecurityConstants()
     def __init__(self) -> None:
-        with open(self.__security_constants.get_secret_key_path(), 'r') as file:
-            self.__secret_key = file.read().strip()
+        
+        self.__utils = SecurityConstants()
+        with open(self.__security_constants.get_secret_key_path(), 'rb') as file:
+            self.__private_key = self.__decrypt_private_key(file.read())
 
         with open(self.__security_constants.get_public_key_path(), 'r') as file:
             self.__public_key = file.read().strip()
 
     def generate_token(self, user_details: Person):
-        self.__get_secret_key()
-
         payload = {
             "documentId": user_details.get_document(),
+            "email": user_details.get_email(),
+            "role": user_details.get_role(),
+            "position": user_details.get_position(),
             "exp": datetime.now(timezone.utc) + timedelta(minutes=20)
         }
+        pem_key = self.__private_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
+        token = jwt.encode(payload, pem_key, algorithm=ALGORITHMS.RS256)
+        return  token
 
-        return jwt.encode(payload, self.__secret_key, algorithm=ALGORITHMS.RS256)
+    def jwt_required(self, f):
+        @wraps(f)
+        def validate_token(*args, **kwargs):
+            try:
+                token = request.headers.get("Authorization")
+                user_dto =  UserDto(request.headers.get("documentId"), "")
+                payload = jwt.decode(token, self.__public_key, algorithms=[ALGORITHMS.RS256])
+                exp_datetime_utc = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
+                
+                if payload["documentId"] == user_dto.get_document() and exp_datetime_utc > datetime.now(timezone.utc):
+                    print("Authorization Data is correct")
+                    return f(*args, **kwargs)
+                else:
+                    return jsonify({"error": "Unauthorized"}), 401
+            except Exception:
+                print("Authorization data Incorrect")
+                return jsonify({"error": "Unauthorized"}), 401
+        
+        return validate_token
+    
+    def _encrypt_data(self, data: str):
+        public_key = serialization.load_pem_public_key(self.__public_key.encode(), default_backend())
 
-    def validate_token(self, user_dto:UserDto, token):
-        payload = jwt.decode(token, self.__public_key, algorithms=[ALGORITHMS.RS256])
+        encrypted_data = public_key.encrypt(
+            data.encode(),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        return base64.b64encode(encrypted_data).decode()
 
-        if payload["documentId"] == user_dto.get_document():
-            return payload
+    def _decrypt_data(self, encrypted_data):
+        decrypted_data = self.__private_key.decrypt(
+            base64.b64decode(encrypted_data),
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
 
-        return "You're not who you say you are!"
+        return decrypted_data.decode()
+    
+    def __decrypt_private_key(self, key):
+        return serialization.load_pem_private_key(key, str(self.__utils.get_secret()).encode(), default_backend())
