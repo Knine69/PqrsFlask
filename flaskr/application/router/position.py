@@ -2,13 +2,16 @@ from flask import Blueprint, request, jsonify
 from ..router.utils.utils import return_table_name
 from ...domain.config import Config
 from ...domain.models.queries.positionquery import Position
+from ..security.tokenmanager import JwtManager
 
+token_manager = JwtManager()
 router_position = Blueprint('router_position', __name__, template_folder='templates', url_prefix='/position')
 mysql = Config.give_mysql_instance(self=Config)
 
 position_query = Position(return_table_name(router_position))
 
 @router_position.route('/<int:id>', methods=["GET"])
+@token_manager.jwt_required
 def get_single_entry(id):
     """
     Brings a specific registry from a specific table dynamically.
@@ -18,6 +21,7 @@ def get_single_entry(id):
     return jsonify(position_query.get_single_registry(id))
 
 @router_position.get('/')
+@token_manager.jwt_required
 def get_all():
     """
     Brings a all entries from a specific table dynamically.
@@ -29,6 +33,7 @@ def get_all():
     return jsonify(position_query.post_new(request))
 
 @router_position.delete("/<int:id>")
+@token_manager.jwt_required
 def delete_position(id):
     """
     Deletes a specific position based on a given ID
@@ -37,6 +42,8 @@ def delete_position(id):
     """
     return jsonify(position_query.delete_registry(id))
 
+@router_position.patch("/<int:id>")
+@token_manager.jwt_required
 def update_position(id):
     """
     Updates a position in database based on the received elements from a JSON coming from the Web Server
