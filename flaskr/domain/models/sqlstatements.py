@@ -26,7 +26,7 @@ def create_new_department():
     return """INSERT INTO department (name, active_members) VALUES (%s, %s)"""
 
 def create_new_person():
-    return """INSERT INTO person (name, document_id, email, position_id, role_id, department_id) VALUES (%s, %s, %s, %s, %s, %s)"""
+    return """INSERT INTO person (name, document_id, email, position_id, role_id, department_id, password) VALUES (%s, %s, %s, %s, %s, %s, %s)"""
 
 def create_new_request():
     return """INSERT INTO request (generated_at, summary, category_id, requester_id, state_id) VALUES (%s, %s, %s, %s, %s)"""
@@ -34,7 +34,7 @@ def create_new_request():
 def delete_from_table():
     return """DELETE FROM {} WHERE {}_id = %s"""
 
-def create_statements_block(request_data):
+def create_statements_block(request_data) -> tuple:
     parameters = []
     for key, value in request_data.items():
         parameters.append(value)
