@@ -45,3 +45,25 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 END //
 DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetRoleById (IN roleId VARCHAR(100))
+BEGIN
+
+	SET @query = CONCAT('SELECT name FROM role WHERE role_id LIKE \'%', roleId, '%\'');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetPositionById (IN positionId VARCHAR(100))
+BEGIN
+
+	SET @query = CONCAT('SELECT name FROM position WHERE position_id LIKE \'%', positionId, '%\'');
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
