@@ -4,9 +4,11 @@ from datetime import datetime
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
 GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
-ERROR_MESSAGE="An error occurred: {}"
+GET_ROLE_BY_ID_PRODCEDURE = "GetRoleById"
+GET_POSITION_BY_ID_PRODCEDURE = "GetPositionById"
+ERROR_MESSAGE = "An error occurred: {}"
 _STATE_ID_NEW_REQUEST = 1
-ALLOWED_ORIGINS= ["http://localhost:3000"]
+ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 def fetch_resources(cur):
     main_result = cur.fetchall()
