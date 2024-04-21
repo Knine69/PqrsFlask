@@ -41,10 +41,10 @@ class JwtManager():
             try:
                 token = request.headers.get("Authorization")
                 user_dto =  UserDto(request.headers.get("documentId"), "")
-                payload = jwt.decode(token, self.__public_key, algorithms=[ALGORITHMS.RS256])
-                exp_datetime_utc = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
+                payload: dict = self.__decrypt_token(token)
+                exp_datetime_utc:datetime = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
                 
-                if payload["documentId"] == user_dto.get_document() and exp_datetime_utc > datetime.now(timezone.utc):
+                if self.__compare_credentials(payload.get("documentId"), user_dto.get_document()) and self.__verify_expiration_date(exp_datetime_utc):
                     print("Authorization Data is correct")
                     return f(*args, **kwargs)
                 else:
@@ -80,5 +80,19 @@ class JwtManager():
 
         return decrypted_data.decode()
     
+    def validate_user_consult_identity(self, token, document):
+        payload: dict = self.__decrypt_token(token)
+        return self.__compare_credentials(document, payload.get("documentId"))
+        
+
+    def __decrypt_token(self, token):
+        return jwt.decode(token, self.__public_key, algorithms=[ALGORITHMS.RS256])
+
     def __decrypt_private_key(self, key):
         return serialization.load_pem_private_key(key, str(self.__utils.get_secret()).encode(), default_backend())
+    
+    def __compare_credentials(self, payload: str, document: str):
+        return payload == document
+    
+    def __verify_expiration_date(self, exp_datetime_utc: datetime):
+        return exp_datetime_utc > datetime.now(timezone.utc)
