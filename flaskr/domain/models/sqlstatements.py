@@ -10,6 +10,9 @@ def get_person_information():
 def get_request_information():
     return """SELECT s.* FROM (select @request_id:= %s p) parm , LookUpRequestInfo s;"""
 
+def get_person_requests():
+    return """SELECT s.* FROM (select @person_id:=%s p) parm , LookUpPersonRequests s;"""
+
 def create_new_role():
     return """INSERT INTO role (name) VALUES (%s)"""
 
