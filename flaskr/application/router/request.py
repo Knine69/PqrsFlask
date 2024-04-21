@@ -26,7 +26,7 @@ def get_all():
     """
     Brings a all entries from a specific table dynamically.
     """
-    return jsonify(request_query.get_registries())
+    return jsonify(request_query.get_registries(request))
 
 @router_request.post("/new_request")
 @token_manager.jwt_required
