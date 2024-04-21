@@ -1,15 +1,15 @@
 from ..dto.user import UserDto
 from ...domain.models.person import Person
-from ...domain.models.queries.personquery import get_person_by_document_id
+from ...domain.models.queries.personquery import PersonQuery
 from ..security.tokenmanager import JwtManager
 
 class AuthenticationManager():
-    _mysql = None 
     _token_manager = None
+    _person_query = None
 
-    def __init__(self, mysql) -> None:
+    def __init__(self) -> None:
         self._token_manager = JwtManager()
-        self._mysql = mysql
+        self._person_query = PersonQuery(table_name='person')
         
     def authenticate(self, request_data):
         user_dto = UserDto(request_data["document"], request_data["password"])
@@ -23,7 +23,7 @@ class AuthenticationManager():
         return "Authentication failed" 
     
     def _get_user_by_document(self, document) -> dict: 
-        response = get_person_by_document_id(self._mysql, document)["person"]
+        response = self._person_query.get_person_by_document(document)
         return response if response else None
         
     def _login(self, dto_password, password):
