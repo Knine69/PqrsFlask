@@ -38,6 +38,28 @@ def get_person_by_document_id(mysql, document_id):
         return {
             "error": "Person does not exist"
         }
+    
+def get_role_by_id(mysql, role_id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_ROLE_BY_ID_PRODCEDURE, [role_id])
+        response = fetch_resources(cur)
+        return {"role": response[0][0]["name"]}
+    except Exception:
+        return {
+            "error": "Role does not exist"
+        }
+    
+def get_position_by_id(mysql, position_id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_POSITION_BY_ID_PRODCEDURE, [position_id])
+        response = fetch_resources(cur)
+        return {"position": response[0][0]["name"]}
+    except Exception:
+        return {
+            "error": "Position does not exist"
+        }
 
 def get_person_id_by_document_id(mysql, document_id):
     try:
