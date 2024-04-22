@@ -43,7 +43,6 @@ class JwtManager():
                 user_dto =  UserDto(request.headers.get("documentId"), "")
                 payload: dict = self.__decrypt_token(token)
                 exp_datetime_utc:datetime = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
-                
                 if self.__compare_credentials(payload.get("documentId"), user_dto.get_document()) and self.__verify_expiration_date(exp_datetime_utc):
                     print("Authorization Data is correct")
                     return f(*args, **kwargs)
@@ -80,10 +79,16 @@ class JwtManager():
 
         return decrypted_data.decode()
     
-    def validate_user_consult_identity(self, token, document):
+    def validate_user_consult_identity(self, token, document, isCreation: False):
         payload: dict = self.__decrypt_token(token)
-        return self.__compare_credentials(document, payload.get("documentId"))
-        
+        isAdmin = self.__validate_admin(payload.get("role"))
+        if isCreation:
+            return isAdmin
+        else: 
+            return isAdmin if isAdmin else self.__compare_credentials(document, payload.get("documentId"))
+    
+    def __validate_admin(self, role):
+        return role == "Admin"
 
     def __decrypt_token(self, token):
         return jwt.decode(token, self.__public_key, algorithms=[ALGORITHMS.RS256])
