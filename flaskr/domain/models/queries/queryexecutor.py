@@ -1,11 +1,14 @@
 from abc import ABC, abstractmethod
 from ....domain.config import Config
 from ....application.router.utils.utils import PATCH_STORED_PROCEDURE, ERROR_MESSAGE, fetch_resources
+from ....application.security.tokenmanager import JwtManager
 from ..sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table
 import json
 
 class QueryExecutor(ABC):
+    __manager = None
     def __init__(self, table_name) -> None:
+        self.__manager = JwtManager()
         self.table_name = table_name
         self.mysql = Config.give_mysql_instance(Config)
 
@@ -64,3 +67,7 @@ class QueryExecutor(ABC):
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
+        
+    def validate_create_user_identity(self, token, document):
+        result = self.__manager.validate_user_consult_identity(token, document, True)
+        return result if result else False

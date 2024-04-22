@@ -38,15 +38,18 @@ class Request(QueryExecutor):
     
     def post_new(self, request):
         try:
-            request_data = self._adapt_request_data_new_request(request)
-            if not request_data["error"]:
-                with self.mysql.connection.cursor() as cur:
-                    cur.execute(create_new_request(), create_statements_block(give_new_request_body(request_data)))
-                    self.mysql.connection.commit()
-                    cur.close()
-                    return {       
-                        "Description": "Insert successfull"
-                        }
+            if super().validate_create_user_identity(request.headers.get("Authorization"),  request.headers.get("documentId")):
+                request_data = self._adapt_request_data_new_request(request)
+                if not request_data["error"]:
+                    with self.mysql.connection.cursor() as cur:
+                        cur.execute(create_new_request(), create_statements_block(give_new_request_body(request_data)))
+                        self.mysql.connection.commit()
+                        cur.close()
+                        return {       
+                            "Description": "Insert successfull"
+                            }
+            else:
+                return ERROR_MESSAGE.format("User is not ahutorized to perform this operation"), 401
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500

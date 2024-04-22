@@ -15,11 +15,14 @@ class Position(QueryExecutor):
     
     def post_new(self, request):
         try:
-            request_data = json.loads(request.data.decode('utf-8'))
-            with self.mysql.connection.cursor() as cur:
-                cur.execute(create_new_position(), create_statements_block(request_data))
-                self.mysql.connection.commit()
-                cur.close()
+            if super().validate_create_user_identity(request.headers.get("Authorization"),  request.headers.get("documentId")):
+                request_data = json.loads(request.data.decode('utf-8'))
+                with self.mysql.connection.cursor() as cur:
+                    cur.execute(create_new_position(), create_statements_block(request_data))
+                    self.mysql.connection.commit()
+                    cur.close()
+            else:
+                return ERROR_MESSAGE.format("User is not ahutorized to perform this operation"), 401
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
