@@ -26,7 +26,11 @@ def get_all():
     """
     Brings a all entries from a specific table dynamically.
     """
-    jsonify(position_query.get_registries())
+    return jsonify(position_query.get_registries())
+
+@router_position.post("/new_position")
+@token_manager.jwt_required 
+def insert_new_person():
     """
     Creates new position based on a received body sent from the Web Server
     """
