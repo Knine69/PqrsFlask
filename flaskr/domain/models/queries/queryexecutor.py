@@ -68,6 +68,6 @@ class QueryExecutor(ABC):
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
         
-    def validate_create_user_identity(self, token, document):
-        result = self.__manager.validate_user_consult_identity(token, document, True)
+    def validate_create_user_identity(self, token, document, isRestricted=True):
+        result = self.__manager.validate_user_consult_identity(token, document, isRestricted)
         return result if result else False
