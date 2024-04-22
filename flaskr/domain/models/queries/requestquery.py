@@ -28,9 +28,6 @@ class Request(QueryExecutor):
                     cur.execute(get_person_requests(), (person_id, ))
                     response = fetch_resources(cur)
                     cur.close()
-
-                    print(f"Response data: {response}")
-
                     return response
             else: 
                 return {"Error": "Unauthorized"}
