@@ -18,7 +18,7 @@ def get_single_entry(id):
 
     id: Gives the specific ID to look for in the database
     """
-    return jsonify(person_query.get_single_registry(id))
+    return jsonify(person_query.get_single_registry(id, request))
 
 @router_person.get('/')
 @token_manager.jwt_required 
@@ -26,7 +26,7 @@ def get_all():
     """
     Brings a all entries from a specific table dynamically.
     """
-    return jsonify(person_query.get_registries())
+    return jsonify(person_query.get_registries(request))
 
 @router_person.post("/new_person")
 @token_manager.jwt_required 

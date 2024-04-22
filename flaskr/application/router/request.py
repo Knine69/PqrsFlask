@@ -18,7 +18,7 @@ def get_single_entry(id):
 
     id: Gives the specific ID to look for in the database
     """
-    return jsonify(request_query.get_single_registry(id))
+    return jsonify(request_query.get_single_registry(id, request))
 
 @router_request.get('/')
 @token_manager.jwt_required
