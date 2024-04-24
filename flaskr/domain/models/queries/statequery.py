@@ -1,11 +1,13 @@
 from .queryexecutor import QueryExecutor
 from ....application.router.utils.utils import ERROR_MESSAGE
+from ....application.security.tokenmanager import JwtManager
 from ..sqlstatements import create_statements_block, create_new_state
 import json
 
 class State(QueryExecutor):
-    def __init__(self, table_name) -> None:
+    def __init__(self, table_name, manager: JwtManager) -> None:
         super().__init__(table_name)
+        self._token_manager = manager
 
     def get_single_registry(self, id):
         return super().get_single_registry(id)
@@ -29,9 +31,17 @@ class State(QueryExecutor):
 
         return {"Response":"Insert successfull"}
     
-    def delete_registry(self, id):
-        return super().delete_registry(id)
+    def delete_registry(self, id, request):
+        result = super().validate_and_process_admin_operations(request)
+        if  type(result) == dict:
+            return result
+        else:
+            return super().delete_registry(id)
     
     
     def patch_registry(self, id, request):
-        return super().patch_registry(id, request)
+        result = super().validate_and_process_admin_operations(request)
+        if  type(result) == dict:
+            return result
+        else:
+            return super().patch_registry(id, request) 

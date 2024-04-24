@@ -62,12 +62,47 @@ class PersonQuery(QueryExecutor):
 
         return {"Response":"Insert successfull"}
     
-    def delete_registry(self, id):
-        return super().delete_registry(id)
+    def delete_registry(self, id, request):
+        try:
+            document = request.headers.get("documentId")
+            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
+            if validation["isAdmin"]:
+                return super().delete_registry(id)
+            elif validation["userValidated"]:
+                if self._validate_ownership(id, request):
+                    return super().delete_registry(id)
+                else:
+                    return super().return_unauthorized_error()
+            else:
+                return super().return_unauthorized_error()
+        except Exception as e: 
+            error_message = ERROR_MESSAGE.format(str(e))
+            return error_message, 500
     
     
     def patch_registry(self, id, request):
-        return super().patch_registry(id, request)
+        try:
+            document = request.headers.get("documentId")
+            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
+            if validation["isAdmin"]:
+                return super().patch_registry(id, request)
+            elif validation["userValidated"]:
+                if self._validate_ownership(id, request):
+                     return super().patch_registry(id, request)
+                else:
+                    return super().return_unauthorized_error()
+            else:
+                return super().return_unauthorized_error()
+        except Exception as e: 
+            error_message = ERROR_MESSAGE.format(str(e))
+            return error_message, 500
+    
+    def _validate_ownership(self, id, request):
+        response = self.get_single_registry(id, request)[0]
+        if "Error" in response:
+            return False
+        else:
+            return response["person_id"] == id 
     
     def _modify_user(self, request):
         manager = JwtManager()

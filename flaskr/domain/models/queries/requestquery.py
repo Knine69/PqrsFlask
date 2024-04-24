@@ -2,7 +2,7 @@ from .queryexecutor import QueryExecutor
 from ....application.router.utils.utils import ERROR_MESSAGE
 from ..sqlstatements import create_statements_block, create_new_request, get_person_requests, get_one_from_table
 
-from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body, fetch_resources
+from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body
 from ....application.security.tokenmanager import JwtManager
 from ..queries.personquery import PersonQuery
 
@@ -10,10 +10,10 @@ import json
 from flask import Request
 
 class Request(QueryExecutor):
-    def __init__(self, table_name) -> None:
+    def __init__(self, table_name, manager: JwtManager) -> None:
         super().__init__(table_name)
         self._person_query = PersonQuery(table_name)
-        self._token_manager = JwtManager()
+        self._token_manager = manager
 
     def get_single_registry(self, id, request):
         document = request.headers.get("documentId")
@@ -26,9 +26,9 @@ class Request(QueryExecutor):
                 cur.execute(get_one_from_table().format(self.table_name, self.table_name), create_statements_block({"id": id}))
                 data = cur.fetchall()
                 cur.close()
-                return data if data[0]["requester_id"] == person_id else ({"Error": "Unauthorized"}, 401)
+                return data if data[0]["requester_id"] == person_id else (super().return_unauthorized_error() )
         else: 
-            return {"Error": "Unauthorized"}, 401
+            return super().return_unauthorized_error() 
         
     def get_registries(self, request):
         try:
@@ -37,14 +37,9 @@ class Request(QueryExecutor):
             if validation["isAdmin"]:
                 return super().get_registries()
             elif validation["userValidated"]:
-                person_id = self._get_person(document)["person_id"]
-                with self.mysql.connection.cursor() as cur:
-                    cur.execute(get_person_requests(), (person_id, ))
-                    data = cur.fetchall()
-                    cur.close()
-                    return data 
+                return self._get_user_requests(document)
             else:
-                return {"Error": "Unauthorized"}, 401
+                return super().return_unauthorized_error() 
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
@@ -68,12 +63,50 @@ class Request(QueryExecutor):
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
     
-    def delete_registry(self, id):
-        return super().delete_registry(id)
-    
+    def delete_registry(self, id, request):
+        try:
+            document = request.headers.get("documentId")
+            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
+            if validation["isAdmin"]:
+                return super().delete_registry(id)
+            elif validation["userValidated"]:
+                if self._validate_ownership(id, document):
+                    return super().delete_registry(id)
+                else:
+                    return super().return_unauthorized_error() 
+            else:
+                return super().return_unauthorized_error() 
+        except Exception as e: 
+            error_message = ERROR_MESSAGE.format(str(e))
+            return error_message, 500
     
     def patch_registry(self, id, request):
-        return super().patch_registry(id, request)
+        try:
+            document = request.headers.get("documentId")
+            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
+            if validation["isAdmin"]:
+                return super().patch_registry(id, request) 
+            elif validation["userValidated"]:
+                if self._validate_ownership(id, document):
+                    return super().patch_registry(id, request) 
+                else:
+                    return super().return_unauthorized_error() 
+            else:
+                return super().return_unauthorized_error() 
+        except Exception as e: 
+            error_message = ERROR_MESSAGE.format(str(e))
+            return error_message, 500
+        
+    def _validate_ownership(self, id, document):
+        return any(item["RequestId"] == id for item in self._get_user_requests(document))
+
+    def _get_user_requests(self, document):
+        person_id = self._get_person(document)["person_id"]
+        with self.mysql.connection.cursor() as cur:
+            cur.execute(get_person_requests(), (person_id, ))
+            data = cur.fetchall()
+            cur.close()
+            return data 
     
     def _adapt_request_data_new_request(self, request: Request):
         request_data = json.loads(request.data.decode('utf-8'))

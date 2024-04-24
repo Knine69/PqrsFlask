@@ -29,9 +29,17 @@ class Role(QueryExecutor):
 
         return {"Response":"Insert successfull"}
     
-    def delete_registry(self, id):
-        return super().delete_registry(id)
+    def delete_registry(self, id, request):
+        result = super().validate_and_process_admin_operations(request)
+        if  type(result) == dict:
+            return result
+        else:
+            return super().delete_registry(id)
     
     
     def patch_registry(self, id, request):
-        return super().patch_registry(id, request)
+        result = super().validate_and_process_admin_operations(request)
+        if  type(result) == dict:
+            return result
+        else:
+            return super().patch_registry(id, request) 
