@@ -43,11 +43,10 @@ class QueryExecutor(ABC):
     @abstractmethod
     def delete_registry(self, id):
         try:
-            # with self.mysql.connection.cursor() as cur:
-            #     cur.execute(delete_from_table().format(self.table_name, self.table_name), (id,))
-            #     self.mysql.connection.commit()
-            #     cur.close()
-                print("Deleted record")
+            with self.mysql.connection.cursor() as cur:
+                cur.execute(delete_from_table().format(self.table_name, self.table_name), (id,))
+                self.mysql.connection.commit()
+                cur.close()
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 404
@@ -57,20 +56,19 @@ class QueryExecutor(ABC):
     @abstractmethod
     def patch_registry(self, id, request):
         try:
-            # request_data = json.loads(request.data.decode('utf-8'))
-            # with self.mysql.connection.cursor() as cur:
-                # cur.callproc(PATCH_STORED_PROCEDURE, [self.table_name, id, json.dumps(request_data)])
-                # response = fetch_resources(cur)
-                # self.mysql.connection.commit()
-                # cur.close()
-                # return response[0]
-                print("Patched record")
+            request_data = json.loads(request.data.decode('utf-8'))
+            with self.mysql.connection.cursor() as cur:
+                cur.callproc(PATCH_STORED_PROCEDURE, [self.table_name, id, json.dumps(request_data)])
+                response = fetch_resources(cur)
+                self.mysql.connection.commit()
+                cur.close()
+                return response[0]
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
         
-    def validate_create_user_identity(self, token, document, isRestricted=True):
-        result = self.__manager.validate_user_consult_identity(token, document, isRestricted)
+    def validate_create_user_identity(self, token, document, is_restricted=True):
+        result = self.__manager.validate_user_consult_identity(token, document, is_restricted)
         if "userValidated" in result:
             return result["userValidated"]
         else:
@@ -86,6 +84,20 @@ class QueryExecutor(ABC):
         except Exception as e:
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
+        
+
+    # TODO: How to fix pointing to children class
+    # def process_transaction(self, request, id, method):
+    #     result = self.validate_and_process_admin_operations(request)
+    #     print(f"result is {result}")
+    #     if isinstance(result, dict):
+    #         return result
+    #     else:
+    #         match method:
+    #             case "patch":
+    #                 return self.patch_registry(id, request)
+    #             case "delete":
+    #                 return self.delete_registry(id)
 
     def validate_identity(self, request):
         document = request.headers.get("documentId")

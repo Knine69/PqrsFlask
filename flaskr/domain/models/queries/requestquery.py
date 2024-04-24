@@ -109,8 +109,8 @@ class Request(QueryExecutor):
             return data 
     
     def _adapt_request_data_new_request(self, request: Request):
-        request_data = json.loads(request.data.decode('utf-8'))
-        request_data.update(self._get_category(request_data["category"]))
+        request_data: dict = json.loads(request.data.decode('utf-8'))
+        request_data.update(self._get_category(request_data.get("category")))
         request_data.update(self._get_person(request.headers.get("documentId")))
         request_data.pop("category")
         return request_data
