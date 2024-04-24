@@ -79,13 +79,13 @@ class JwtManager():
 
         return decrypted_data.decode()
     
-    def validate_user_consult_identity(self, token, document, isRestricted= True):
+    def validate_user_consult_identity(self, token, document, is_restricted= True):
         payload: dict = self.__decrypt_token(token)
-        isAdmin = self.__validate_admin(payload.get("role"))
-        if isRestricted:
-            return {"isAdmin": isAdmin}
+        is_admin = self.__validate_admin(payload.get("role"))
+        if is_restricted:
+            return {"isAdmin": is_admin}
         else: 
-            return {"isAdmin": isAdmin} if isAdmin else {"isAdmin": False, "userValidated": self.__compare_credentials(document, payload.get("documentId"))}
+            return {"isAdmin": is_admin} if is_admin else {"isAdmin": False, "userValidated": self.__compare_credentials(document, payload.get("documentId"))}
     
     def __validate_admin(self, role):
         return role == "Admin"
