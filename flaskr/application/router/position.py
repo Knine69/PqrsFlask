@@ -44,7 +44,7 @@ def delete_position(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(position_query.delete_registry(id))
+    return jsonify(position_query.delete_registry(id, request))
 
 @router_position.patch("/<int:id>")
 @token_manager.jwt_required

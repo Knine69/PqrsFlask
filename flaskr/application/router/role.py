@@ -44,7 +44,7 @@ def delete_role(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(role_query.delete_registry(id))
+    return jsonify(role_query.delete_registry(id, request))
 
 @router_role.patch("/<int:id>")
 @token_manager.jwt_required

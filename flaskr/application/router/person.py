@@ -44,7 +44,7 @@ def delete_person(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(person_query.delete_registry(id))
+    return jsonify(person_query.delete_registry(id, request))
 
 @router_person.patch("/<int:id>")
 @token_manager.jwt_required

@@ -41,7 +41,7 @@ def delete_department(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(deparment_query.delete_registry(id))
+    return jsonify(deparment_query.delete_registry(id, request))
 
 @router_department.patch("/<int:id>")
 @token_manager.jwt_required

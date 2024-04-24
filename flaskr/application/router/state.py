@@ -8,7 +8,7 @@ token_manager = JwtManager()
 router_state = Blueprint('router_state', __name__, template_folder='templates', url_prefix='/state')
 mysql = Config.give_mysql_instance(self=Config)
 
-state_query = State(return_table_name(router_state))
+state_query = State(return_table_name(router_state), JwtManager())
 
 @router_state.route('/<int:id>', methods=["GET"])
 @token_manager.jwt_required
@@ -44,7 +44,7 @@ def delete_state(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(state_query.delete_registry(id))
+    return jsonify(state_query.delete_registry(id, request))
 
 @router_state.patch("/<int:id>")
 @token_manager.jwt_required

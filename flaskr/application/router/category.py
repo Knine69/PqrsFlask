@@ -43,7 +43,7 @@ def delete_category(id):
 
     id: Given ID to delete in database
     """
-    return jsonify(category_query.delete_registry(id))
+    return jsonify(category_query.delete_registry(id, request))
 
 
 @router_category.patch("/<int:id>")
