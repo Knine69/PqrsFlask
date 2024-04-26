@@ -43,14 +43,16 @@ class JwtManager():
                 user_dto =  UserDto(request.headers.get("documentId"), "")
                 payload: dict = self.__decrypt_token(token)
                 exp_datetime_utc:datetime = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
-                if self.__compare_credentials(payload.get("documentId"), user_dto.get_document()) and self.__verify_expiration_date(exp_datetime_utc):
-                    print("Authorization Data is correct")
-                    return f(*args, **kwargs)
+                if self.__verify_expiration_date(exp_datetime_utc):
+                    if self.__compare_credentials(payload.get("documentId"), user_dto.get_document()):
+                        print("Authorization Data is correct")
+                        return f(*args, **kwargs)
+                    else:
+                        return self.__unauthorized_exception("DESCRIPTION", "Action not allowed")
                 else:
-                    return jsonify({"error": "Unauthorized"}), 401
-            except Exception:
-                print("Authorization data Incorrect")
-                return jsonify({"error": "Unauthorized"}), 401
+                    return self.__unauthorized_exception("DESCRIPTION", "Session expired")
+            except Exception as e:
+                return self.__unauthorized_exception("ERROR", str(e))
         
         return validate_token
     
@@ -101,3 +103,6 @@ class JwtManager():
     
     def __verify_expiration_date(self, exp_datetime_utc: datetime):
         return exp_datetime_utc > datetime.now(timezone.utc)
+    
+    def __unauthorized_exception(self, case, description):
+        return jsonify({"{}".format(case): "{}".format(description), "CODE": 401})
