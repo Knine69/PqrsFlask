@@ -16,11 +16,11 @@ class AuthenticationManager():
         person = Person(self._get_user_by_document(user_dto.get_document()))
         if self._login(user_dto.get_password(), self._token_manager._decrypt_data(person.get_password())):
             return {
-                "Description":"Correctly authenticated",
+                "description":"Correctly authenticated",
                 "validSession": True,
                 "sessionToken": self._token_manager.generate_token(person)
                 }
-        return "Authentication failed" 
+        return {"description": "Authentication error", "code": 401, "validSession": False }
     
     def _get_user_by_document(self, document) -> dict: 
         response = self._person_query.get_person_by_document(document)
