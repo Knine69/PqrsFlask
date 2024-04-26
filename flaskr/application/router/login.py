@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from ...domain.models.queries.personquery import PersonQuery
 from ...application.authentication.auth import AuthenticationManager
 from ...domain.config import Config
@@ -12,4 +12,4 @@ mysql = Config.give_mysql_instance(self=Config)
 def login():
     request_data = json.loads(request.data.decode('utf-8'))
     auth_manager = AuthenticationManager()
-    return auth_manager.authenticate(request_data)
+    return jsonify(auth_manager.authenticate(request_data))
