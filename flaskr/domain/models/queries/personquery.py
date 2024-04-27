@@ -36,7 +36,7 @@ class PersonQuery(QueryExecutor):
     def get_registries(self, request):
         try:
             document = request.headers.get("documentId")
-            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
+            validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, True)
             if validation["isAdmin"]:
                 return super().get_registries()
             else:
