@@ -14,7 +14,7 @@ class AuthenticationManager():
     def authenticate(self, request_data):
         user_dto = UserDto(request_data["document"], request_data["password"])
         person = Person(self._get_user_by_document(user_dto.get_document()))
-        if self._login(user_dto.get_password(), self._token_manager._decrypt_data(person.get_password())):
+        if self._login(self._token_manager._decrypt_data(user_dto.get_password()), self._token_manager._decrypt_data(person.get_password())):
             return {
                 "description":"Correctly authenticated",
                 "validSession": True,
