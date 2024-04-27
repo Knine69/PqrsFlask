@@ -1,6 +1,6 @@
 from .queryexecutor import QueryExecutor
 from ....application.router.utils.utils import ERROR_MESSAGE
-from ..sqlstatements import create_statements_block, create_new_request, get_person_requests, get_one_from_table, get_request_information
+from ..sqlstatements import create_statements_block, create_new_request, get_person_requests, get_request_information
 
 from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body
 from ....application.security.tokenmanager import JwtManager
