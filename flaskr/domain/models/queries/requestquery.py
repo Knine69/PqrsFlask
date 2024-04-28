@@ -115,10 +115,6 @@ class Request(QueryExecutor):
         request_data.pop("category")
         return request_data
     
-    def _adapt_request_data_queries(self, request):
-        request_data = json.loads(request.data.decode('utf-8'))
-        return request_data
-
     def _get_category(self, data):
         return get_category_id_by_name(self.mysql, data)
 
