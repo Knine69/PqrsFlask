@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from ....domain.config import Config
 from ....application.router.utils.utils import PATCH_STORED_PROCEDURE, ERROR_MESSAGE, fetch_resources
 from ....application.security.tokenmanager import JwtManager
-from ..sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table
+from ..sqlstatements import get_one_from_table, create_statements_block, get_all_entities, delete_from_table, accomodate_data
 import json
 
 class QueryExecutor(ABC):
@@ -58,6 +58,7 @@ class QueryExecutor(ABC):
         try:
             request_data = json.loads(request.data.decode('utf-8'))
             with self.mysql.connection.cursor() as cur:
+                request_data = accomodate_data(self.mysql, request_data)
                 cur.callproc(PATCH_STORED_PROCEDURE, [self.table_name, id, json.dumps(request_data)])
                 response = fetch_resources(cur)
                 self.mysql.connection.commit()
