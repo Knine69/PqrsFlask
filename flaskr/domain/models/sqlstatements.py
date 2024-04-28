@@ -1,3 +1,5 @@
+from ...application.router.utils.utils import get_category_id_by_name
+
 def get_one_from_table():
     return """SELECT * FROM {} where {}_id = %s"""
 
@@ -42,3 +44,18 @@ def create_statements_block(request_data) -> tuple:
     for key, value in request_data.items():
         parameters.append(value)
     return tuple(parameters)
+
+def accomodate_data(mysql, request_data: dict) -> tuple: 
+    corrected_data = {}
+    
+    for key, value in request_data.items():
+        match(key):
+            case "Category":
+                corrected_data.update(get_category_id_by_name(mysql, value))
+            case "Summary":
+                corrected_data.update({"summary": "{}".format(value)})
+            case _:
+                corrected_data.update({key: value})
+
+    print(f"Corrected data is: {corrected_data}")
+    return corrected_data
