@@ -21,7 +21,6 @@ def get_single_entry(id):
     return jsonify(role_query.get_single_registry(id))
 
 @router_role.get('/')
-@token_manager.jwt_required
 def get_all():
     """
     Brings a all entries from a specific table dynamically.
