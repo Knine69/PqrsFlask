@@ -10,6 +10,13 @@ mysql = Config.give_mysql_instance(self=Config)
 
 person_query = PersonQuery(return_table_name(router_person))
 
+@router_person.post('/signup')
+def signup_user():
+    """
+        Creates a new user without need of having an active session.
+    """
+    return jsonify(person_query.sign_up(request))
+
 @router_person.route('/<int:id>', methods=["GET"])
 @token_manager.jwt_required
 def get_single_entry(id):
