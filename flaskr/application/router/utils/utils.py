@@ -3,6 +3,9 @@ from datetime import datetime
 
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
 GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
+GET_ROLE_NAME_PROCEDURE = 'GetRoleByName'
+GET_DEPARTMENT_NAME_PROCEDURE = 'GetDepartmentByName'
+GET_POSITION_NAME_PROCEDURE = 'GetPositionByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
 GET_ROLE_BY_ID_PRODCEDURE = "GetRoleById"
 GET_POSITION_BY_ID_PRODCEDURE = "GetPositionById"
@@ -24,6 +27,36 @@ def get_category_id_by_name(mysql, category_name):
         cur.callproc(GET_CATEGORY_NAME_PROCEDURE, [category_name])
         response = fetch_resources(cur)
         return {"category_id": response[0][0]['category_id']}
+    except Exception as e:
+        error_message = ERROR_MESSAGE.format(str(e))
+        return jsonify(error_message), 500
+
+def get_position_id_by_name(mysql, position_name):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_POSITION_NAME_PROCEDURE, [position_name])
+        response = fetch_resources(cur)
+        return {"position_id": response[0][0]['position_id']}
+    except Exception as e:
+        error_message = ERROR_MESSAGE.format(str(e))
+        return jsonify(error_message), 500
+    
+def get_role_id_by_name(mysql, role_name):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_ROLE_NAME_PROCEDURE, [role_name])
+        response = fetch_resources(cur)
+        return {"role_id": response[0][0]['role_id']}
+    except Exception as e:
+        error_message = ERROR_MESSAGE.format(str(e))
+        return jsonify(error_message), 500
+
+def get_department_id_by_name(mysql, department_name):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_DEPARTMENT_NAME_PROCEDURE, [department_name])
+        response = fetch_resources(cur)
+        return {"department_id": response[0][0]['department_id']}
     except Exception as e:
         error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
