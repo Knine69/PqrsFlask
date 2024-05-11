@@ -1,7 +1,7 @@
 from flask import Request
 from .queryexecutor import QueryExecutor
-from ....application.router.utils.utils import ERROR_MESSAGE, get_person_by_document_id, get_role_by_id, get_position_by_id, get_person_id_by_document_id
-from ..sqlstatements import create_statements_block, create_new_person, get_one_from_table, get_person_requests
+from ....application.router.utils.utils import *
+from ..sqlstatements import create_statements_block, create_new_person, get_one_from_table
 from ....application.security.tokenmanager import JwtManager
 import json
 
@@ -62,6 +62,19 @@ class PersonQuery(QueryExecutor):
 
         return {"Response":"Insert successfull"}
     
+    def sign_up(self, request: Request):
+        try:
+            request_data: dict = self._adapt_request_data_new_person(request)
+            with self.mysql.connection.cursor() as cur:
+                cur.execute(create_new_person(), create_statements_block(request_data))
+                self.mysql.connection.commit()
+                cur.close()
+        except Exception as e:
+            error_message = ERROR_MESSAGE.format(str(e))
+            return error_message, 500
+
+        return {"Response":"Insert successfull"}
+    
     def delete_registry(self, id, request):
         try:
             document = request.headers.get("documentId")
@@ -105,14 +118,19 @@ class PersonQuery(QueryExecutor):
             return response["person_id"] == id 
     
     def _modify_user(self, request):
-        manager = JwtManager()
         request_data: dict = json.loads(request.data.decode('utf-8'))
-        password = request_data.get("password")
-        request_data.pop("password")
-        request_data.update({"password": manager._encrypt_data(password)})
+        manager = JwtManager()
 
-        return request_data
+        return self._password_encrypt(request_data, manager)
 
+    def _password_encrypt(self, request: dict, manager: JwtManager):
+        aux_request = request
+        password = aux_request.get("password")
+        aux_request.pop("password")
+        aux_request.update({"password": manager._encrypt_data(password)})
+
+        return aux_request
+    
     def _adapt_person(self, person: dict):
         transformed = person
         transformed.update(get_role_by_id(self.mysql, person.get("role_id")))
@@ -123,3 +141,36 @@ class PersonQuery(QueryExecutor):
 
     def _get_person(self, data):
         return get_person_id_by_document_id(self.mysql, data)
+    
+    def _get_role(self, data):
+        return get_role_id_by_name(self.mysql, data)
+    
+    def _get_position(self, data):
+        return get_position_id_by_name(self.mysql, data)
+    
+    def _get_department(self, data):
+        return get_department_id_by_name(self.mysql, data)
+    
+    def _adapt_request_data_new_person(self, request: Request):
+        request_data: dict = json.loads(request.data.decode('utf-8'))
+        
+        request_data.update(self._get_role(request_data.get("role")))
+        request_data.update(self._get_position(request_data.get("position")))
+        request_data.update(self._get_department(request_data.get("department")))
+        request_data.update({'document_id': request_data.get("documentId")})
+        
+        request_data.pop("role")
+        request_data.pop("documentId")
+        request_data.pop("position")
+        request_data.pop("department")
+
+        return {
+            'name': request_data.get("name"),
+            'document_id': request_data.get("document_id"),
+            'email': request_data.get("email"),
+            'position_id': request_data.get("position_id"),
+            'role_id': request_data.get("role_id"),
+            'department_id': request_data.get("department_id"),
+            'password': request_data.get("password"),
+        }
+    
