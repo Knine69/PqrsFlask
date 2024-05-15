@@ -23,7 +23,7 @@ class PersonQuery(QueryExecutor):
             elif validation["userValidated"]:
                 person_id = self._get_person(document)["person_id"]
                 with self.mysql.connection.cursor() as cur:
-                    cur.execute(get_one_from_table().format(self.table_name, self.table_name), create_statements_block({"id": id}))
+                    cur.execute(get_one_from_table().format(self.table_name, self.table_name), create_statements_block({"id": person_id}))
                     data = cur.fetchall()
                     cur.close()
                     return data if data[0]["person_id"] == person_id else ({"Error": "Unauthorized"}, 401)
