@@ -7,8 +7,10 @@ GET_ROLE_NAME_PROCEDURE = 'GetRoleByName'
 GET_DEPARTMENT_NAME_PROCEDURE = 'GetDepartmentByName'
 GET_POSITION_NAME_PROCEDURE = 'GetPositionByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
+GET_PERSON_BY_ID_PROCEDURE = "GetPersonById"
 GET_ROLE_BY_ID_PRODCEDURE = "GetRoleById"
 GET_POSITION_BY_ID_PRODCEDURE = "GetPositionById"
+GET_STATE_BY_ID = "GetStateById"
 ERROR_MESSAGE = "An error occurred: {}"
 _STATE_ID_NEW_REQUEST = 1
 ALLOWED_ORIGINS = ["http://localhost:3000"]
@@ -72,6 +74,17 @@ def get_person_by_document_id(mysql, document_id):
             "error": "Person does not exist"
         }
     
+def get_person_by_id(mysql, id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_PERSON_BY_ID_PROCEDURE, [id])
+        response = fetch_resources(cur)
+        return response[0][0]
+    except Exception:
+        return {
+            "error": "Person does not exist"
+        }
+    
 def get_role_by_id(mysql, role_id):
     try:
         cur = mysql.connection.cursor()
@@ -81,6 +94,17 @@ def get_role_by_id(mysql, role_id):
     except Exception:
         return {
             "error": "Role does not exist"
+        }
+    
+def get_state_by_id(mysql, state_id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_STATE_BY_ID, [state_id])
+        response = fetch_resources(cur)
+        return {"state": response[0][0]["name"]}
+    except Exception:
+        return {
+            "error": "State does not exist"
         }
     
 def get_position_by_id(mysql, position_id):
