@@ -1,13 +1,12 @@
 from .queryexecutor import QueryExecutor
 from ....application.router.utils.utils import ERROR_MESSAGE
 from ..sqlstatements import create_statements_block, create_new_request, get_person_requests, get_request_information
-from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body
+from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body, get_state_by_id, get_person_by_id
 from ....application.security.tokenmanager import JwtManager
 from ..queries.personquery import PersonQuery
 from ....domain.config import Config
 
 from flask import Request
-from email.mime.text import MIMEText
 from flask_mail import Message
 
 import json
@@ -84,18 +83,19 @@ class Request(QueryExecutor):
             error_message = ERROR_MESSAGE.format(str(e))
             return error_message, 500
     
-    def patch_registry(self, id, request):
+    def patch_registry(self, id, request: Request):
         try:
             document = request.headers.get("documentId")
+            state_now_name, state_after_name, send_to_email = self._prepare_email_info(id, request)
             validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
             if validation["isAdmin"]:
                 response = super().patch_registry(id, request) 
-                self.send_email("This is my subject", "juan_huguet82191@elpoli.edu.co", "This is my body text")
+                self.send_email(send_to_email, state_now_name, state_after_name, id)
                 return response
             elif validation["userValidated"]:
                 if self._validate_ownership(id, document):
                     response = super().patch_registry(id, request) 
-                    self.send_email("This is my subject", "juan_huguet82191@elpoli.edu.co", "This is my body text")
+                    self.send_email(send_to_email, state_now_name, state_after_name, id)
                     return response 
                 else:
                     return super().return_unauthorized_error() 
@@ -128,11 +128,19 @@ class Request(QueryExecutor):
 
     def _get_person(self, data):
         return get_person_id_by_document_id(self.mysql, data)
+    
+    def _prepare_email_info(self, id, request):
+        state_now: dict = self.get_single_registry(id, request)[0]
 
-    def send_email(self, subject, to_email, body_text):
-        msg = Message(subject,
+        state_now_name = get_state_by_id(self.mysql, state_now.get("state_id")).get("state")
+        state_after_name = get_state_by_id(self.mysql, json.loads(request.data.decode('utf-8')).get("state_id")).get("state")
+        requester_email = get_person_by_id(self.mysql, state_now.get("requester_id")).get("email")
+
+        return (state_now_name, state_after_name, requester_email)
+
+    def send_email(self, to_email, state_before, state_now, request_id):
+        msg = Message("Actualización de PQRS: {}".format(request_id),
                   recipients=[to_email],
-                  body=body_text)
+                  body="Tu solicitud se ha actualizado: {} -> {} - Para usuario: {}".format(state_before, state_now, to_email))
         self._mail.send(msg)
-        print(f"Sent email")
     
