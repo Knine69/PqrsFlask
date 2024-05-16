@@ -1,19 +1,23 @@
 from .queryexecutor import QueryExecutor
 from ....application.router.utils.utils import ERROR_MESSAGE
 from ..sqlstatements import create_statements_block, create_new_request, get_person_requests, get_request_information
-
 from ....application.router.utils.utils import get_person_id_by_document_id, get_category_id_by_name, give_new_request_body
 from ....application.security.tokenmanager import JwtManager
 from ..queries.personquery import PersonQuery
+from ....domain.config import Config
+
+from flask import Request
+from email.mime.text import MIMEText
+from flask_mail import Message
 
 import json
-from flask import Request
 
 class Request(QueryExecutor):
     def __init__(self, table_name, manager: JwtManager) -> None:
         super().__init__(table_name)
         self._person_query = PersonQuery(table_name)
         self._token_manager = manager
+        self._mail = Config.give_mail_instance(self=Config)
 
     def get_single_registry(self, id, request):
         document = request.headers.get("documentId")
@@ -85,10 +89,14 @@ class Request(QueryExecutor):
             document = request.headers.get("documentId")
             validation = self._token_manager.validate_user_consult_identity(request.headers.get("Authorization"), document, False)
             if validation["isAdmin"]:
-                return super().patch_registry(id, request) 
+                response = super().patch_registry(id, request) 
+                self.send_email("This is my subject", "juan_huguet82191@elpoli.edu.co", "This is my body text")
+                return response
             elif validation["userValidated"]:
                 if self._validate_ownership(id, document):
-                    return super().patch_registry(id, request) 
+                    response = super().patch_registry(id, request) 
+                    self.send_email("This is my subject", "juan_huguet82191@elpoli.edu.co", "This is my body text")
+                    return response 
                 else:
                     return super().return_unauthorized_error() 
             else:
@@ -121,5 +129,10 @@ class Request(QueryExecutor):
     def _get_person(self, data):
         return get_person_id_by_document_id(self.mysql, data)
 
-    
+    def send_email(self, subject, to_email, body_text):
+        msg = Message(subject,
+                  recipients=[to_email],
+                  body=body_text)
+        self._mail.send(msg)
+        print(f"Sent email")
     
