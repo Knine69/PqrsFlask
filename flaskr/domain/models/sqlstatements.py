@@ -56,6 +56,4 @@ def accomodate_data(mysql, request_data: dict) -> tuple:
                 corrected_data.update({"summary": "{}".format(value)})
             case _:
                 corrected_data.update({key: value})
-
-    print(f"Corrected data is: {corrected_data}")
     return corrected_data

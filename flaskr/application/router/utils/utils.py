@@ -4,6 +4,8 @@ from datetime import datetime
 PATCH_STORED_PROCEDURE = 'PatchRecordsInTable'
 GET_CATEGORY_NAME_PROCEDURE = 'GetCategoryByName'
 GET_ROLE_NAME_PROCEDURE = 'GetRoleByName'
+GET_STATE_BY_NAME_PROCEDURE = 'GetStateByName'
+GET_PERSON_BY_NAME_PROCEDURE = 'GetPersonByName'
 GET_DEPARTMENT_NAME_PROCEDURE = 'GetDepartmentByName'
 GET_POSITION_NAME_PROCEDURE = 'GetPositionByName'
 GET_PERSON_BY_DOCUMENT_PROCEDURE = 'GetPersonByDocumentId'
@@ -29,6 +31,26 @@ def get_category_id_by_name(mysql, category_name):
         cur.callproc(GET_CATEGORY_NAME_PROCEDURE, [category_name])
         response = fetch_resources(cur)
         return {"category_id": response[0][0]['category_id']}
+    except Exception as e:
+        error_message = ERROR_MESSAGE.format(str(e))
+        return jsonify(error_message), 500
+    
+def get_person_by_name(mysql, person_name):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_PERSON_BY_NAME_PROCEDURE, [person_name])
+        response = fetch_resources(cur)
+        return {"person": response[0][0]}
+    except Exception as e:
+        error_message = ERROR_MESSAGE.format(str(e))
+        return jsonify(error_message), 500
+    
+def get_state_by_name(mysql, state_name):
+    try:
+        cur = mysql.connection.cursor()
+        cur.callproc(GET_STATE_BY_NAME_PROCEDURE, [state_name])
+        response = fetch_resources(cur)
+        return {"state": response[0][0]}
     except Exception as e:
         error_message = ERROR_MESSAGE.format(str(e))
         return jsonify(error_message), 500
